@@ -1,4 +1,7 @@
 import { React, useState } from "react";
+import { InputTodo } from "./components/InputTodo";
+import { IncompleteTodos } from "./components/IncompleteTodos";
+import { CompleteTodos } from "./components/CompleteTodos";
 import "./style.css";
 
 export const App = () => {
@@ -52,50 +55,26 @@ export const App = () => {
 
   return (
     <>
-      <div className="input-area">
-        <input
-          placeholder="TODOを入力"
-          value={todoText}
-          onChange={onChangeTodoText}
-        />
-        {/* todoTextのinputのvalueにしてあげる。 */}
-        <button onClick={onClickAdd}>追加</button>
-      </div>
-      <div className="incomplete-area">
-        <p className="title">未完了のTODO</p>
-        <ul>
-          {incompleteTodos.map((todo, index) => {
-            return (
-              <li key={todo}>
-                <div className="list-row">
-                  {/* 差分をReactは変更するので、何個目のループかを判断できるように正確に比較する為に目印をつける。 */}
-                  {/* keyをつける必要がある。 */}
-                  <p>{todo}</p>
-                  <button onClick={() => onClickComplete(index)}>完了</button>
-                  <button onClick={() => onClickDelete(index)}>削除</button>
-                  {/* indexをonClickDeleteに渡すことで指定したものを削除できる。
-                  ()をつけて設定すると関数を実行されてしまう実行されないようにするにはアロー関数で囲んであげる必要がある。。 */}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      <div className="complete-area">
-        <p className="title">完了のTODO</p>
-        <ul>
-          {completeTodos.map((todo, index) => {
-            return (
-              <li key={todo}>
-                <div className="list-row">
-                  <p>{todo}</p>
-                  <button onClick={() => onClickBack(index)}>戻す</button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <InputTodo
+        todoText={todoText}
+        onChange={onChangeTodoText}
+        onClick={onClickAdd}
+        disabled={incompleteTodos.length >= 5}
+        // 5以上のときにtrueが渡るようにしている。そうなるとinputTodoがdisabledになる。
+      />
+      {incompleteTodos.length >= 5 && (
+        <p style={{ color: "red" }}>
+          登録できるtodo５個までだよ〜。消化しろ〜。
+        </p>
+      )}
+      {/* ５個以上の未完了のToDoリストが入ったら表示されるメッセージを表示する。 */}
+      {/* その際にinputをdisableにするようにする。 */}
+      <IncompleteTodos
+        todos={incompleteTodos}
+        completeClick={onClickComplete}
+        deleteClick={onClickDelete}
+      />
+      <CompleteTodos todos={completeTodos} backClick={onClickBack} />
     </>
   );
 };
